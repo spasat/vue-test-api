@@ -27,7 +27,7 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.exception , method: onKernelException}
 
-    App\EventListener\AuthenticationSuccessListener:
+    App\EventListener\JWTCreatedListener:
         tags:
             - name: kernel.event_listener
               event: lexik_jwt_authentication.on_jwt_created

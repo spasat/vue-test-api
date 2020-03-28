@@ -1,14 +1,12 @@
 <?php
 
-
 namespace App\EventListener;
-
 
 use App\Entity\User;
 use Lexik\Bundle\JWTAuthenticationBundle\Event\JWTCreatedEvent;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class AuthenticationSuccessListener
+class JWTCreatedListener
 {
     /**
      * @param JWTCreatedEvent $event
@@ -23,7 +21,7 @@ class AuthenticationSuccessListener
             return;
         }
 
-        unset($data['username'], $data['roles']);
+        unset($data['roles']);
 
         $data['user'] = [
             'id' => $user->getId(),

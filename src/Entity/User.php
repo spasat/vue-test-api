@@ -150,7 +150,7 @@ class User implements UserInterface, SerializerContextInterface
     {
         return [
             AbstractNormalizer::IGNORED_ATTRIBUTES => [
-                'password', 'salt'
+                'password', 'salt', 'username'
             ]
         ];
     }
