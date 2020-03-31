@@ -4,6 +4,7 @@
 namespace App\EventListener;
 
 
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
@@ -25,17 +26,25 @@ class KernelExceptionListener
         }
 
         $jsonResponse = new JsonResponse(null, Response::HTTP_INTERNAL_SERVER_ERROR);
-        $data = [
-            'message' => $_ENV['APP_ENV'] === 'dev' ? $exception->getMessage() : 'Server error!'
-        ];
+        $message = 'Server error!';
+
+        if ($exception instanceof UniqueConstraintViolationException) {
+            $jsonResponse->setStatusCode(Response::HTTP_BAD_REQUEST);
+            $message = 'Entity already exist!';
+        }
 
         if ($exception instanceof HttpExceptionInterface) {
             $jsonResponse->setStatusCode($exception->getStatusCode());
             $jsonResponse->headers->replace($exception->getHeaders());
+            $message = $exception->getMessage();
         }
 
-        $data = array_merge(['code' => $jsonResponse->getStatusCode()], $data);
-        $jsonResponse->setData($data);
+        $jsonResponse->setData(
+            [
+                'code' => $jsonResponse->getStatusCode(),
+                'message' => $message
+            ]
+        );
 
         $event->setResponse($jsonResponse);
     }
